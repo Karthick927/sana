@@ -110,6 +110,34 @@ function loadVRM() {
       scene.add(vrm.scene);
 
       console.log("✅ VRM loaded:", vrm);
+
+    // --- ENABLE JIGGLE PHYSICS ---
+// ===============================
+// 🫨 CHEST JIGGLE PHYSICS
+// ===============================
+if (vrm.springBoneManager) {
+
+  vrm.springBoneManager.springBones.forEach((spring) => {
+
+    const name = spring.joint?.bone?.name?.toLowerCase() || "";
+
+    // 🎯 target chest / bust bones
+    if (
+      name.includes("bust") ||
+      name.includes("chest") ||
+      name.includes("breast")
+    ) {
+      spring.stiffness = 0.12;     // ⬇ softer = more jiggle
+      spring.gravityPower = 0.35;  // ⬆ bounce
+      spring.dragForce = 0.45;     // ⬇ slower damping
+      spring.hitRadius = 0.03;     // ⬆ soft collision
+
+      console.log("🫨 Chest jiggle enabled on:", name);
+    }
+  });
+}
+
+
     },
     (progress) => {
       if (progress.total > 0) {
@@ -278,27 +306,7 @@ function findTailBones() {
   }
 }
 
-function updateTailAnimation(delta) {
-  if (!vrm) return;
 
-  // Find tail bones on first call
-  if (tailBones.length === 0) {
-    findTailBones();
-    if (tailBones.length === 0) return;
-  }
-
-  tailTime += delta;
-
-  tailBones.forEach((bone, i) => {
-    const phase = tailTime * 2.5 + i * 0.6; // wave effect along tail
-    const sway = Math.sin(phase) * 0.4;  // BIGGER sway
-
-    // Force update the bone's world matrix after setting rotation
-    bone.rotation.z = sway;
-    bone.rotation.y = sway * 0.5;
-    bone.updateMatrixWorld(true);
-  });
-}
 
 
 // --------------------
@@ -322,8 +330,7 @@ function animate(currentTime) {
   if (vrm) {
     updateIdleAnimation(delta);
     updateBlink(delta);
-    vrm.update(delta);
-    updateTailAnimation(delta);  // Run AFTER vrm.update to override spring bones
+    vrm.update(delta);  
   }
 
   // Update controls
