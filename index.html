@@ -203,32 +203,31 @@ function updateIdleAnimation(delta) {
     spine.rotation.z = swayCycle * 0.005;
   }
 
-  // Subtle head movement (looking around slightly)
-  // 🎭 Natural random head movement
-if (head) {
+  if (head) {
   headChangeTimer += delta;
 
   // Pick a new random target every few seconds
   if (headChangeTimer > headChangeInterval) {
-    headTargetY = THREE.MathUtils.randFloat(-0.25, 0.25); // left/right
-    headTargetX = THREE.MathUtils.randFloat(-0.1, 0.15);  // up/down
+    headTargetY = THREE.MathUtils.randFloat(-0.6, 0.6); // ⬅ bigger left/right
+    headTargetX = THREE.MathUtils.randFloat(-0.25, 0.25); // ⬅ bigger up/down
     headChangeTimer = 0;
-    headChangeInterval = 2 + Math.random() * 3; // 2–5 sec
+    headChangeInterval = 1.5 + Math.random() * 2.5; // ⬅ more frequent
   }
 
-  // Smooth interpolation (VERY IMPORTANT)
+  // Faster, smoother interpolation
   head.rotation.y = THREE.MathUtils.lerp(
     head.rotation.y,
     headTargetY,
-    0.02
+    0.05 // ⬅ was 0.02
   );
 
   head.rotation.x = THREE.MathUtils.lerp(
     head.rotation.x,
     headTargetX,
-    0.02
+    0.05
   );
 }
+
 
   // Keep arms down with very subtle movement
   if (leftUpperArm) {
